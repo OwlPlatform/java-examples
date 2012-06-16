@@ -26,14 +26,14 @@ import com.owlplatform.sensor.SensorAggregatorInterface;
 import com.owlplatform.sensor.listeners.ConnectionListener;
 
 /**
- * A simple class demonstrating how to write a Java-based sensor component by
- * sending a single sample message once per second.
+ * <p>A simple class demonstrating how to write a Java-based sensor component by
+ * sending a single sample message once per second.</p>
  * 
- * This class makes use of the {@link SensorAggregatorInterface} in the simplest
- * way possible - by polling its state and treating it strictly as a member.
+ * <p>This class makes use of the {@link SensorAggregatorInterface} in the simplest
+ * way possible - by polling its state and treating it strictly as a generic object.
  * However, the {@code SensorAggregatorInterface} supports the Observable
  * pattern, and registering as a {@link ConnectionListener} allows more
- * efficient interaction at the cost of greater complexity.
+ * efficient interaction at the cost of greater complexity.</p>
  * 
  * @author Robert Moore
  * 
