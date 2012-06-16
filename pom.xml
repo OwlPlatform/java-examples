@@ -38,7 +38,6 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.6.1</version>
 			<type>jar</type>
-		
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
