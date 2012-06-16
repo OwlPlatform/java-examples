@@ -65,6 +65,9 @@ public class AsyncFakeSensor implements ConnectionListener {
     }
   }
 
+  /**
+   * Timer for sending samples once per second.
+   */
   final Timer timer = new Timer();
 
   @Override
