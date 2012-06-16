@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <!--  The console appender is useful for debugging in real-time -->
+	<appender name="console" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out" />
+		<param name="Threshold" value="DEBUG" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d] %-5p %t/%c{1} - %m%n" />
+		</layout>
+	</appender>
+
+    <!--  Rolling file appender which breaks up the log into 10MB files  -->
+	<appender name="rollingFile" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="logs/tutorial-debug.log" />
+		<param name="MaxFileSize" value="10MB" />
+		<!-- Keep at most 100MB of logs -->
+		<param name="MaxBackupIndex" value="10" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d] %-5p %t/%c{1} - %m%n" />
+		</layout>
+	</appender>
+	
+	<!--  Rolling file appender which breaks up the log into files by day  -->
+	<appender name="dailyRollingFile" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="logs/tutorial.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
+		<param name="Append" value="true" />
+		<param name="Threshold" value="INFO" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<!-- <param name="ConversionPattern" value="[%d] %-5p %t/%c{1} - %m%n" /> -->
+			<param name="ConversionPattern" value="[%d{HH:mm:ss.SSS}] - %p - %t/%c{1} - %m%n"/>
+		</layout>
+	</appender>
+	
+	<!--  Control logging verbosity for a specific package or class -->
+	<!--  Disabled for now -->
+	<!-- 
+	<logger name="org.grailrtls.tutorials.world_model.CLISolver">
+	  <level value="debug" />
+	  <appender-ref="console" />
+	</logger>
+	 -->
+
+	<root>
+		<priority value="info" />
+		<appender-ref ref="console" />
+		<!-- 
+		<appender-ref ref="dailyRollingFile" />
+		<appender-ref ref="rollingFile" />
+		 -->
+	</root>
+</log4j:configuration>
