@@ -51,6 +51,12 @@
 			<version>1.0.1-SNAPSHOT</version>
 			<type>jar</type>
 		</dependency>
+		<dependency>
+		  <groupId>com.owlplatform</groupId>
+		  <artifactId>owl-solver</artifactId>
+		  <version>1.0.1-SNAPSHOT</version>
+		  <type>jar</type>
+		</dependency>
 	</dependencies>
 
 	<build>
