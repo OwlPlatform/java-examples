@@ -79,7 +79,7 @@ public class SimpleFakeSolver {
     // Array of Transmitter filters
     ArrayList<Transmitter> txers = null;
     if (args.length > 2) {
-      int txIndex = 0;
+      
       txers = new ArrayList<Transmitter>();
       for (int argc = 2; argc < args.length; ++argc) {
         String arg = args[argc];
@@ -132,10 +132,11 @@ public class SimpleFakeSolver {
     // Wait up to 1 second for the subscription response
     int waitAttempts = 0;
     while (!agg.isSubscriptionAcknowledged()) {
-      // Waited > 1 second
-      if (waitAttempts > 10) {
+      // Waited > 5 second
+      if (waitAttempts > 50) {
         System.err
             .println("Aggregator never acknowledged the subscription request.");
+        agg.disconnect();
         return;
       }
       // Got disconnected
