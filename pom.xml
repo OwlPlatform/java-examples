@@ -24,25 +24,25 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
+			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.6.1</version>
+			<version>1.7.2</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>
+			<version>1.7.2</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
+			<version>1.2.17</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
@@ -54,13 +54,13 @@
 		<dependency>
 			<groupId>com.owlplatform</groupId>
 			<artifactId>owl-sensor</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.3</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
 		  <groupId>com.owlplatform</groupId>
 		  <artifactId>owl-solver</artifactId>
-		  <version>1.0.1</version>
+		  <version>1.0.2</version>
 		  <type>jar</type>
 		</dependency>
     <dependency>
