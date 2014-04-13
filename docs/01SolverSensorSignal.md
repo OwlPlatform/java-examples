@@ -68,15 +68,21 @@ through Sonatype.  Below is the pom.xml for our project:
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+              <archive>
+                <manifest>
+                  <addClasspath>true</addClasspath>
+                  <mainClass>ex.owl.solver.rssi.Main</mainClass>
+                </manifest>
+              </archive>
+            </configuration>
+          </plugin>
         </plugins>
         <pluginManagement>
           <plugins>
-            <!-- Required because of Apache Mina dependency 
-            <plugin>
-              <groupId>org.apache.felix</groupId>
-              <artifactId>maven-bundle-plugin</artifactId>
-              <version>2.3.7</version>
-            </plugin>-->
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-compiler-plugin</artifactId>
@@ -90,14 +96,6 @@ through Sonatype.  Below is the pom.xml for our project:
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-jar-plugin</artifactId>
               <version>2.4</version>
-              <configuration>
-                <archive>
-                  <manifest>
-                    <addClasspath>true</addClasspath>
-                    <mainClass>ex.owl.solver.rssi.Main</mainClass>
-                  </manifest>
-                </archive>
-              </configuration>
             </plugin>
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
@@ -107,11 +105,80 @@ through Sonatype.  Below is the pom.xml for our project:
                 <descriptorRefs>
                   <descriptorRef>jar-with-dependencies</descriptorRef>
                 </descriptorRefs>
+                <archive>
+                  <manifest>
+                    <mainClass>ex.owl.solver.rssi.Main</mainClass>
+                  </manifest>
+                </archive>
               </configuration>
             </plugin>
           </plugins>
         </pluginManagement>
       </build>
     </project>
+
+In the pom.xml, we can see that our "main" class will be
+"ex.owl.solver.rssi.Main", so let's create that now.
+
+    mkdir -p src/main/java/ex/owl/solver/rssi/
+    touch src/main/java/ex/owl/solver/rssi/Main.java
+
+And we can test the syntax of the POM by running Maven with the "package"
+directive to produce the JAR.
+
+    mvn clean package
+
+Near the end should be the line `[INFO] BUILD SUCCESS`.  Aside from defining
+this main class, the POM will import the required libraries and dependencies,
+will build a .jar file, and will make it executable.  This is a nice
+convenient way of wrapping-up the code into the closest thing Java gives to an
+executable object.
+
+## Writing the Solver ##
+
+Here's the basic outline of the solver's operation:
+
+1. Read all Samples from the Aggregator.
+2. For each Transmitter/Receiver pair, extract the RSSI from the Sample.
+3. Use the extracted RSSI values to compute an average RSSI and a variance of
+   the RSSI values.
+4. Push these average/variance RSSI values into the World Model with the
+   Attribute name "rssi.average" and "rssi.variance". 
+5. Push these Attributes using the Origin value "ex-rssi-solver".
+
+So let's jump right in to coding.  We'll start with some "boilerplate" code
+that's necessary either for Java or for Owl Platform solvers.  Open up
+Main.java in your favorite editor and type this lovely bit of code:
+
+    package ex.owl.solver.rssi;
+
+    import com.owlplatform.solver.*;
+    import com.owlplatform.worldmodel.solver.*;
+
+    public class Main {
+      public static void main(String[]args){
+        if(args.length != 4){
+          System.err.println("Usage: <Aggregator Host> <Aggregator Port> <WM Solver Host> <WM Solver Port>");
+          System.exit(1);
+        }
+        final SolverAggregatorConnection pull = new SolverAggregatorConnection();
+        pull.setHost(args[0]);
+        pull.setPort(Integer.parseInt(args[1]);
+
+        final SolverWorldConnection push = new SolverWorldConnection();
+        push.setOriginString("ex-rssi-solver");
+        push.setHost(args[2]);
+        push.setPort(Integer.parseInt(args[3]));
+
+        // Done configuring connections to World Model
+      }
+    }
+
+At this point, we can try to rebuild the JAR file and execute it, and we
+should get the error message (if we don't provide the required arguments).
+
+    mvn clean package
+    java -jar target/owl-rssi-solver-1.0.0-SNAPSHOT-jar-with-dependencies.jar
+
 
 
