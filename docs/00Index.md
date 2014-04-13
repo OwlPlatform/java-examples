@@ -2,6 +2,7 @@ Java Programming with Owl Platform
 ==================================
 
 Author: Rob Moore
+
 Last Update: April 12, 2014
 
 ## Getting Started ##
@@ -17,7 +18,7 @@ at all.  Please contact me if you want me to write one up, or if you have a
 suggestion for a tutorial.
 
 ### Solvers ###
-* Sensor Signal Parser - A simple solver that will read the Received Signal
+* [Sensor Signal Parser][1] - A simple solver that will read the Received Signal
 	Strength Indicator (RSSI) value from wireless devices and update the World
 	Model.
 * Pipsqueak Temperature Parser - A simple solver that will read either the
@@ -33,3 +34,5 @@ suggestion for a tutorial.
   and sends an email alert when detects a hot or cold value.
 * Sensor Presence Detector - A simple application that detects when a specific
   sensor "enters" and "leaves" an area.
+
+[1]: 01SolverSensorSignal.html    "Sensor Signal Parser Solver"
