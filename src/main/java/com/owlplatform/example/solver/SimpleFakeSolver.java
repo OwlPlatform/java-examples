@@ -117,7 +117,7 @@ public class SimpleFakeSolver {
 
     SubscriptionRequestRule rule = SubscriptionRequestRule
         .generateGenericRule();
-    rule.setUpdateInterval(1000l);
+    rule.setUpdateInterval(0000l);
     if (txers != null) {
       rule.setTransmitters(txers);
     }
