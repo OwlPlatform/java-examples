@@ -157,7 +157,7 @@ public class TagCounter {
 
     HashMap<Integer, Boolean> ids = new HashMap<Integer, Boolean>();
     HashMap<Integer, Integer> recvs = new HashMap<Integer, Integer>();
-    HashMap<Integer, Integer> temps = new HashMap<Integer, Integer>();
+    HashMap<Integer, Float> temps = new HashMap<Integer, Float>();
     HashMap<Integer, Boolean> onOffs = new HashMap<Integer, Boolean>();
     long lastPrint = System.currentTimeMillis();
 
@@ -174,8 +174,7 @@ public class TagCounter {
           | ((msg.getDeviceId()[14] << 8) & 0xFF00)
           | ((msg.getDeviceId()[13] << 16) & 0xFF0000)
           | ((msg.getDeviceId()[12] << 24) & 0xFF000000);
-      
-      
+
       int rec = (msg.getReceiverId()[15] & 0xFF)
           | ((msg.getReceiverId()[14] << 8) & 0xFF00)
           | ((msg.getReceiverId()[13] << 16) & 0xFF0000)
@@ -185,20 +184,34 @@ public class TagCounter {
       } else {
         ids.put(id, Boolean.TRUE);
       }
-      
-      if(recvs.get(rec) == null){
-        recvs.put(rec,Integer.valueOf(1));
-      }else {
-        recvs.put(rec,Integer.valueOf(recvs.get(rec).intValue()+1));
-      }
-      
-      if(msg.getSensedData() != null && msg.getSensedData().length == 2 && msg.getSensedData()[0] == 0x01){
-        int temp = ((msg.getSensedData()[1]>>1)&0x7F)  -40;
-        temps.put(id,Integer.valueOf(temp));
-        onOffs.put(id,(msg.getSensedData()[1] & 0x01) == 1 ? Boolean.TRUE : Boolean.FALSE);
+
+      if (recvs.get(rec) == null) {
+        recvs.put(rec, Integer.valueOf(1));
+      } else {
+        recvs.put(rec, Integer.valueOf(recvs.get(rec).intValue() + 1));
       }
 
-      if (System.currentTimeMillis() - lastPrint > 10000) {
+      if (msg.getSensedData() != null && msg.getSensedData().length >= 2) {
+        byte[] data = msg.getSensedData();
+        float temp = -274;
+        // 16-bit temperature
+        if ((data[0] & 0x02) == 0x02 && data.length >= 3) {
+          int startIdx = 1;
+          if ((data[0] & 0x01) == 0x01) {
+            startIdx = 2;
+          }
+          byte[] tBytes = new byte[2];
+          System.arraycopy(data, startIdx, tBytes, 0, 2);
+          temp = convTemp(tBytes);
+        } else if ((data[0] & 0x01) == 0x01) {
+          temp = ((data[1] >> 1) & 0x7F) - 40;
+        }
+        temps.put(id, Float.valueOf(temp));
+        onOffs.put(id, (msg.getSensedData()[1] & 0x01) == 1 ? Boolean.TRUE
+            : Boolean.FALSE);
+      }
+
+      if (System.currentTimeMillis() - lastPrint > 35000) {
         ArrayList<Integer> identNums = new ArrayList<Integer>(ids.size());
         ArrayList<Integer> recvNums = new ArrayList<Integer>(ids.size());
 
@@ -206,71 +219,76 @@ public class TagCounter {
           if (ids.get(theId).booleanValue()) {
             // System.out.println(id);
 
-           
             identNums.add(theId);
 
-            
           }
           ids.put(theId, Boolean.FALSE);
         }
-        
+
         for (Integer r : recvs.keySet()) {
-          if (recvs.get(r).intValue()>1) {
+          if (recvs.get(r).intValue() > 1) {
             // System.out.println(id);
 
-            
             recvNums.add(r);
 
-            
           }
-          
+
         }
 
         Collections.sort(identNums);
         Collections.sort(recvNums);
 
         System.out.println("########## RECEIVERS ##########");
-        
+
         int c = 0;
         for (Integer i : recvNums) {
-          System.out.printf("%4d: %,4d | ",i,recvs.get(i));
+          System.out.printf("%4d: %,4d | ", i, recvs.get(i));
           c++;
-          if(c >= 5){
+          if (c >= 5) {
             System.out.println();
             c = 0;
           }
         }
-        
+
         recvs.clear();
 
-        System.out
-            .printf("\n======================================\nTotal: %d\n\n",
-                recvNums.size());
-        
-        
+        System.out.printf(
+            "\n======================================\nTotal: %d\n\n",
+            recvNums.size());
+
         System.out.println("########## TRANSMITTERS ##########");
-        
+
         c = 0;
         for (Integer i : identNums) {
-          Integer temp = temps.remove(i);
+          Float temp = temps.remove(i);
           Boolean on = onOffs.remove(i);
-          System.out.printf("%4d: %4dC %s| ",i,temp == null ? -274 : temp,on == null ? " " : on.booleanValue() ? "#" : " ");
+          System.out.printf("%4d: %5.2fC %s| ", i, temp == null ? -274 : temp,
+              on == null ? " " : on.booleanValue() ? "#" : " ");
           c++;
-          if(c >= 5){
+          if (c >= 5) {
             System.out.println();
             c = 0;
           }
         }
 
-        System.out
-            .printf("\n======================================\nTotal: %d\n\n",
-                identNums.size());
+        System.out.printf(
+            "\n======================================\nTotal: %d\n\n",
+            identNums.size());
         lastPrint = System.currentTimeMillis();
 
       }
 
       // System.out.println(msg);
     }
+  }
+
+  private static float convTemp(byte[] asBytes) {
+    if (asBytes == null || asBytes.length != 2) {
+      return -274;
+    }
+    int wholevalue = (asBytes[0] * 16 + ((asBytes[1] >> 4)&0x0F)) - 40;
+    int sixteenths = asBytes[1] & 0x0f;
+    return wholevalue+ (sixteenths / 16f);
   }
 
 }
